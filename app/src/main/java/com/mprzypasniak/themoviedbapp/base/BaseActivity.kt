@@ -9,12 +9,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
 import com.mprzypasniak.themoviedbapp.R
-import org.koin.androidx.viewmodel.ext.android.viewModelForClass
-import kotlin.reflect.KClass
 
-abstract class BaseActivity<VM: ViewModel, T: ViewBinding>(clazz: KClass<VM>): AppCompatActivity() {
+abstract class BaseActivity<VM: ViewModel, T: ViewBinding>: AppCompatActivity() {
     protected lateinit var binding: T
-    protected val vm: VM by viewModelForClass(clazz)
+    protected abstract val vm: VM
     abstract val inflater: (LayoutInflater) -> T
 
     override fun onCreate(savedInstanceState: Bundle?) {
