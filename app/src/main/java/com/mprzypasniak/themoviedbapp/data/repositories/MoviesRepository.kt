@@ -5,4 +5,6 @@ import com.mprzypasniak.themoviedbapp.data.models.responses.MovieListResponse
 
 interface MoviesRepository {
     fun getMoviesList(languageTag: String): Result<MovieListResponse>
+    fun addFavourite(movie: Movie)
+    fun deleteFavourite(movie: Movie)
 }

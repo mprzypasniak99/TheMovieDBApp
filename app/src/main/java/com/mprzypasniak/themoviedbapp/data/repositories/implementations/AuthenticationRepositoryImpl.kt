@@ -6,6 +6,8 @@ import com.mprzypasniak.themoviedbapp.network.api.AuthApi
 
 class AuthenticationRepositoryImpl(private val api: AuthApi): BaseRepository(), AuthenticationRepository {
     override fun authenticateToken() = result {
-        api.authenticateToken().execute()
+        resolveNetworkResponse {
+            api.authenticateToken().execute()
+        }
     }
 }

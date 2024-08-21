@@ -1,12 +1,9 @@
 package com.mprzypasniak.themoviedbapp.screens.movie_details
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
-import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mprzypasniak.themoviedbapp.R
 import com.mprzypasniak.themoviedbapp.databinding.DialogMovieDetailsBinding
@@ -35,12 +32,21 @@ class MovieDetailsDialog : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vm.selectedMovie?.let {
+        vm.selectedMovie.observe(this) {
+            if (it == null) {
+                dismiss()
+                return@observe
+            }
             with(binding) {
                 tvDetailsTitle.text = it.title
                 tvDetailsReleaseDate.text = getString(R.string.release_date, it.releaseDate)
                 tvDetailsRating.text = getString(R.string.rating, it.voteAverage)
                 tvDetailsDescription.text = it.overview
+                cbDetailsFavourite.isChecked = it.isFavourite
+
+                cbDetailsFavourite.setOnClickListener { _ ->
+                    vm.toggleFavouriteOnMovie(it, !it.isFavourite)
+                }
 
                 ivPoster.loadPoster(it.posterPath, PosterSize.W780)
             }

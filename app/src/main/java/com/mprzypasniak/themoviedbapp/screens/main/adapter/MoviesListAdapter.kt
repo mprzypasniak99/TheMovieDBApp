@@ -12,6 +12,7 @@ import java.util.Locale
 class MoviesListAdapter: RecyclerView.Adapter<MoviesListAdapter.ViewHolder>() {
     private var movies = ArrayList<Movie>()
     lateinit var onMovieClicked: (Movie) -> Unit
+    lateinit var onFavouriteClicked: (Movie, Boolean) -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -42,6 +43,11 @@ class MoviesListAdapter: RecyclerView.Adapter<MoviesListAdapter.ViewHolder>() {
             binding.tvMovieTitle.text = movie.title
             binding.ivMovieIcon.loadPoster(movie.posterPath, PosterSize.W92)
             binding.tvScore.text = String.format(Locale.getDefault(), "%.2f", movie.voteAverage)
+            binding.cbIsFavourite.isChecked = movie.isFavourite
+
+            binding.cbIsFavourite.setOnClickListener {
+                onFavouriteClicked(movie, !movie.isFavourite)
+            }
 
             binding.root.setOnClickListener {
                 onMovieClicked(movie)

@@ -43,6 +43,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         with(binding) {
             adapter = MoviesListAdapter()
             adapter.onMovieClicked = ::showMovieDetails
+            adapter.onFavouriteClicked = vm::toggleFavouriteOnMovie
             rvMoviesList.layoutManager = LinearLayoutManager(this@MainActivity)
             rvMoviesList.adapter = adapter
             swipeRefreshMovies.setOnRefreshListener {
@@ -52,7 +53,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     private fun showMovieDetails(movie: Movie) {
-        vm.selectedMovie = movie
+        vm.selectMovie(movie)
         MovieDetailsDialog().show(supportFragmentManager, MovieDetailsDialog.TAG)
     }
 }
