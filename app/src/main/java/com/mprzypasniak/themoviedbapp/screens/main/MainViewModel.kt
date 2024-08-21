@@ -19,6 +19,8 @@ class MainViewModel(
     val movies: LiveData<List<Movie>>
         get() = _movies
 
+    var selectedMovie: Movie? = null
+
     var languageTag: String = ""
 
     fun authenticateToken() {

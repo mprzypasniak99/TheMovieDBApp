@@ -8,6 +8,7 @@ import com.mprzypasniak.themoviedbapp.base.BaseActivity
 import com.mprzypasniak.themoviedbapp.data.models.Movie
 import com.mprzypasniak.themoviedbapp.databinding.ActivityMainBinding
 import com.mprzypasniak.themoviedbapp.screens.main.adapter.MoviesListAdapter
+import com.mprzypasniak.themoviedbapp.screens.movie_details.MovieDetailsDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
@@ -51,6 +52,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     private fun showMovieDetails(movie: Movie) {
-
+        vm.selectedMovie = movie
+        MovieDetailsDialog().show(supportFragmentManager, MovieDetailsDialog.TAG)
     }
 }
