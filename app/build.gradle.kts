@@ -1,6 +1,9 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kapt)
 }
 
 android {
@@ -13,6 +16,18 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0-alpha"
+
+        val keystoreFile = project.rootProject.file("apikeys.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        val token = properties.getProperty("TOKEN") ?: ""
+
+        buildConfigField(
+            type = "String",
+            name = "TOKEN",
+            value = token
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +44,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -50,11 +66,18 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
-    implementation(libs.koin.android.compat)
-    implementation(libs.koin.androidx.navigation)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+
+    implementation(libs.glide)
 
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.room)
+    kapt(libs.androidx.room.kapt)
 
     // Test
     testImplementation(libs.junit)

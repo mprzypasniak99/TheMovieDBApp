@@ -1,7 +1,10 @@
 package com.mprzypasniak.themoviedbapp.data.repositories
 
-import com.mprzypasniak.themoviedbapp.data.models.local.Movie
+import com.mprzypasniak.themoviedbapp.data.models.Movie
+import com.mprzypasniak.themoviedbapp.data.models.responses.MovieListResponse
 
 interface MoviesRepository {
-    fun getMoviesList(): List<Movie>
+    fun getMoviesList(languageTag: String): Result<MovieListResponse>
+    fun addFavourite(movie: Movie)
+    fun deleteFavourite(movie: Movie)
 }
