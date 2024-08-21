@@ -1,7 +1,7 @@
 package com.mprzypasniak.themoviedbapp.base
 
 import com.google.gson.Gson
-import com.mprzypasniak.themoviedbapp.data.models.StatusResponse
+import com.mprzypasniak.themoviedbapp.data.models.responses.StatusResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import retrofit2.Response

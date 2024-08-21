@@ -1,4 +1,4 @@
-package com.mprzypasniak.themoviedbapp.data.models
+package com.mprzypasniak.themoviedbapp.data.models.responses
 
 import com.google.gson.annotations.SerializedName
 

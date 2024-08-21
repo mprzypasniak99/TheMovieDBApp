@@ -1,8 +1,11 @@
 package com.mprzypasniak.themoviedbapp.di
 
 import com.mprzypasniak.themoviedbapp.data.repositories.AuthenticationRepository
+import com.mprzypasniak.themoviedbapp.data.repositories.MoviesRepository
 import com.mprzypasniak.themoviedbapp.data.repositories.implementations.AuthenticationRepositoryImpl
+import com.mprzypasniak.themoviedbapp.data.repositories.implementations.MoviesRepositoryImpl
 import com.mprzypasniak.themoviedbapp.network.api.AuthApi
+import com.mprzypasniak.themoviedbapp.network.api.MoviesApi
 import com.mprzypasniak.themoviedbapp.network.interceptors.AuthInterceptor
 import com.mprzypasniak.themoviedbapp.screens.main.MainViewModel
 import okhttp3.OkHttpClient
@@ -12,12 +15,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
 }
 
 val dataModule = module {
     factory<AuthenticationRepository> {
         AuthenticationRepositoryImpl(get())
+    }
+
+    factory<MoviesRepository> {
+        MoviesRepositoryImpl(get())
     }
 }
 
@@ -37,4 +44,5 @@ val networkModule = module {
     }
 
     factory { get<Retrofit>().create(AuthApi::class.java) }
+    factory { get<Retrofit>().create(MoviesApi::class.java) }
 }

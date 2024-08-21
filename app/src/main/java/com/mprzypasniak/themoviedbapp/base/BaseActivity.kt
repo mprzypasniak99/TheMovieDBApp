@@ -8,7 +8,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
-import com.mprzypasniak.themoviedbapp.R
 
 abstract class BaseActivity<VM: ViewModel, T: ViewBinding>: AppCompatActivity() {
     protected lateinit var binding: T
@@ -20,8 +19,8 @@ abstract class BaseActivity<VM: ViewModel, T: ViewBinding>: AppCompatActivity() 
         binding = inflater(layoutInflater)
 
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
