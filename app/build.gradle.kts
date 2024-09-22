@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.room)
+    implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.kapt)
 
     // Test

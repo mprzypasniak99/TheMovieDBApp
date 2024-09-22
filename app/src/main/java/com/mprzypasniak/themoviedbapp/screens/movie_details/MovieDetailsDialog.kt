@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mprzypasniak.themoviedbapp.R
 import com.mprzypasniak.themoviedbapp.databinding.DialogMovieDetailsBinding
 import com.mprzypasniak.themoviedbapp.ext.PosterSize
 import com.mprzypasniak.themoviedbapp.ext.loadPoster
 import com.mprzypasniak.themoviedbapp.screens.main.MainViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class MovieDetailsDialog : BottomSheetDialogFragment() {
@@ -32,23 +36,30 @@ class MovieDetailsDialog : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vm.selectedMovie.observe(this) {
-            if (it == null) {
-                dismiss()
-                return@observe
-            }
-            with(binding) {
-                tvDetailsTitle.text = it.title
-                tvDetailsReleaseDate.text = getString(R.string.release_date, it.releaseDate)
-                tvDetailsRating.text = getString(R.string.rating, it.voteAverage)
-                tvDetailsDescription.text = it.overview
-                cbDetailsFavourite.isChecked = it.isFavourite
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.uiState.collect {
+                    val selectedMovie = it.selectedMovie
+                    if (selectedMovie == null) {
+                        dismiss()
+                        return@collect
+                    }
 
-                cbDetailsFavourite.setOnClickListener { _ ->
-                    vm.toggleFavouriteOnMovie(it, !it.isFavourite)
+                    val isFavourite = selectedMovie.id in it.favourites
+                    with(binding) {
+                        tvDetailsTitle.text = selectedMovie.title
+                        tvDetailsReleaseDate.text = getString(R.string.release_date, selectedMovie.releaseDate)
+                        tvDetailsRating.text = getString(R.string.rating, selectedMovie.voteAverage)
+                        tvDetailsDescription.text = selectedMovie.overview
+                        cbDetailsFavourite.isChecked = selectedMovie.id in it.favourites
+
+                        cbDetailsFavourite.setOnClickListener { _ ->
+                            vm.toggleFavouriteOnMovie(selectedMovie, !isFavourite)
+                        }
+
+                        ivPoster.loadPoster(selectedMovie.posterPath, PosterSize.W780)
+                    }
                 }
-
-                ivPoster.loadPoster(it.posterPath, PosterSize.W780)
             }
         }
     }

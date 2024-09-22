@@ -1,59 +1,88 @@
 package com.mprzypasniak.themoviedbapp.screens.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.mprzypasniak.themoviedbapp.data.models.Movie
 import com.mprzypasniak.themoviedbapp.data.repositories.AuthenticationRepository
 import com.mprzypasniak.themoviedbapp.data.repositories.MoviesRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val authRepo: AuthenticationRepository,
     private val moviesRepo: MoviesRepository
 ): ViewModel() {
-    private val _errorMessage = MutableLiveData("")
-    private val _movies = MutableLiveData<List<Movie>>()
-
-    val errorMessage: LiveData<String>
-        get() = _errorMessage
-    val movies: LiveData<List<Movie>>
-        get() = _movies
-
-    val _selectedMovie = MutableLiveData<Movie?>(null)
-    val selectedMovie: LiveData<Movie?>
-        get() = _selectedMovie
+    private val _uiState = MutableStateFlow(MainUiState())
+    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     var languageTag: String = ""
 
-    fun authenticateToken() {
-        authRepo.authenticateToken()
-            .onFailure {
-                _errorMessage.postValue(it.message)
-            }
+    private var authenticationJob: Job? = null
+    private var fetchNowPlayingJob: Job? = null
+    private var toggleFavouriteJob: Job? = null
+    private var favouritesFlowJob: Job? = null
+
+    fun initView() {
+        authenticateToken()
+        getNowPlayingList()
+        observeFavouritesList()
+    }
+
+    private fun authenticateToken() {
+        authenticationJob?.cancel()
+        authenticationJob = viewModelScope.launch {
+            authRepo.authenticateToken()
+                .onFailure {
+                    _uiState.update { state ->
+                        state.copy(errorMessage = it.localizedMessage ?: "Unknown error")
+                    }
+                }
+        }
     }
 
     fun getNowPlayingList() {
-        moviesRepo.getMoviesList(languageTag)
-            .onSuccess {
-                _movies.postValue(it.results)
-            }
+        fetchNowPlayingJob?.cancel()
+        fetchNowPlayingJob = viewModelScope.launch {
+            _uiState.update { it.copy(isFetchingMovies = true) }
+            moviesRepo.getMoviesList(languageTag)
+                .onSuccess {
+                    _uiState.update { state ->
+                        state.copy(movies = it.results, isFetchingMovies = false)
+                    }
+                }
+        }
     }
 
     fun selectMovie(movie: Movie) {
-        _selectedMovie.postValue(movie)
+        _uiState.update {
+            it.copy(selectedMovieIndex = it.movies.indexOf(movie))
+        }
     }
 
     fun toggleFavouriteOnMovie(movie: Movie, isFavourite: Boolean) {
-        val updatedMovie = movie.copy(isFavourite = isFavourite)
-        if (isFavourite) {
-            moviesRepo.addFavourite(updatedMovie)
-        } else {
-            moviesRepo.deleteFavourite(updatedMovie)
+        toggleFavouriteJob?.cancel()
+        toggleFavouriteJob = viewModelScope.launch {
+            if (isFavourite) {
+                moviesRepo.addFavourite(movie)
+            } else {
+                moviesRepo.deleteFavourite(movie)
+            }
         }
+    }
 
-        val updatedList = _movies.value?.map { if (it.id == updatedMovie.id) updatedMovie else it } ?: emptyList()
-        if (_selectedMovie.value?.id == updatedMovie.id) selectMovie(updatedMovie)
-        _movies.postValue(updatedList)
+    private fun observeFavouritesList() {
+        favouritesFlowJob?.cancel()
+        favouritesFlowJob = viewModelScope.launch {
+            moviesRepo.getFavouriteMoviesFlow().distinctUntilChanged().collect { value ->
+                _uiState.update {
+                    it.copy(favourites = value)
+                }
+            }
+        }
     }
 }
