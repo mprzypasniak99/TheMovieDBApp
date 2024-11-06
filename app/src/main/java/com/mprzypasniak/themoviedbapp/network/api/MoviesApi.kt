@@ -1,6 +1,5 @@
 package com.mprzypasniak.themoviedbapp.network.api
 
-import com.mprzypasniak.themoviedbapp.data.models.Movie
 import com.mprzypasniak.themoviedbapp.data.models.responses.MovieListResponse
 import com.mprzypasniak.themoviedbapp.network.ApiConstants
 import retrofit2.Call
