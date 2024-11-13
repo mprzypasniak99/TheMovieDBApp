@@ -14,8 +14,8 @@ interface MovieDao {
     fun getFavouritesFromStorage(): Flow<List<Int>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFavouriteToStorage(movie: MovieLocalModel)
+    suspend fun insertFavouriteToStorage(movie: MovieLocalModel)
 
     @Delete
-    fun deleteFavouriteFromStorage(movie: MovieLocalModel)
+    suspend fun deleteFavouriteFromStorage(movie: MovieLocalModel)
 }
