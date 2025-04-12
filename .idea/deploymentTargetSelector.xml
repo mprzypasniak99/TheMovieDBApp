@@ -16,7 +16,7 @@
       <SelectionState runConfigName="MovieDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="deletingMovieSendsUpdateToListFlow()">
+      <SelectionState runConfigName="MovieListItemPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
