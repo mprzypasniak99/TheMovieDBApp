@@ -55,6 +55,12 @@ class MainViewModel(
                         state.copy(movies = it.results, isFetchingMovies = false)
                     }
                 }
+                .onFailure {
+                    _uiState.update { state ->
+                        state.copy(errorMessage = it.localizedMessage ?: "Unknown error",
+                            isFetchingMovies = false)
+                    }
+                }
         }
     }
 

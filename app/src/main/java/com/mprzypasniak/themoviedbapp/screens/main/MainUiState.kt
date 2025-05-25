@@ -11,4 +11,6 @@ data class MainUiState(
 ) {
     val selectedMovie: Movie?
         get() = selectedMovieIndex?.let { movies[it] }
+    val isSelectedMovieFavourite: Boolean
+        get() = favourites.contains(selectedMovie?.id ?: -1)
 }

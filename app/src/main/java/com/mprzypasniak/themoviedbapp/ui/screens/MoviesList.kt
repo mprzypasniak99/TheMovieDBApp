@@ -1,14 +1,15 @@
 package com.mprzypasniak.themoviedbapp.ui.screens
 
-import android.R.drawable.ic_menu_close_clear_cancel
+import android.R.drawable.btn_star_big_off
+import android.R.drawable.btn_star_big_on
 import android.R.drawable.ic_menu_camera
-import android.R.drawable.ic_menu_add
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -63,18 +64,19 @@ fun MovieListItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(8.dp)
+            .fillMaxWidth()
             .clickable { onMovieSelected(movie.movie) }
     ) {
         GlideImage(
             model = movie.movie.getPosterUrl(PosterSize.W342),
             contentDescription = movie.movie.title,
             loading = placeholder(ic_menu_camera),
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .size(100.dp)
+                .padding(8.dp)
         )
 
-        Spacer(Modifier.weight(1f))
-
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(movie.movie.title)
 
             Spacer(Modifier.weight(1f))
@@ -85,13 +87,11 @@ fun MovieListItem(
             )
         }
 
-        Spacer(Modifier.weight(1f))
-
         IconToggleButton(
             checked = movie.isFavourite,
             onCheckedChange = { onFavouriteToggle(movie.movie, it) }
         ) {
-            val icon = if (movie.isFavourite) ic_menu_close_clear_cancel else ic_menu_add
+            val icon = if (movie.isFavourite) btn_star_big_on else btn_star_big_off
             val contentDescription = if (movie.isFavourite) "Remove from favourites" else "Add to favourites"
             Image(
                 painter = painterResource(id = icon),
